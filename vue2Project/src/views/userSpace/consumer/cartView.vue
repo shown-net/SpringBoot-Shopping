@@ -101,10 +101,14 @@ export default {
           // 在购物车删除该商品
           this.deleteGoods(goods.name)
         }
-        request.post("http://localhost:8080/order/add",OrderList)
-        request.post("http://localhost:8080/order/sendEmail",OrderList);
       })
-      this.$notify.success("提交订单成功")
+      if (OrderList.length === 0) {
+        this.$message.error("选择数量为0，请选择要购买的商品");
+      } else {
+        request.post("http://localhost:8080/order/add", OrderList)
+        request.post("http://localhost:8080/order/sendEmail", OrderList);
+        this.$notify.success("提交订单成功")
+      }
     }
   }
 }

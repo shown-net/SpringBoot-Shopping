@@ -1,6 +1,6 @@
 <template>
   <el-form class="register-container" :rules="rules"
-           ref="ruleForm" :model="sizeForm" label-width="auto">
+           ref="sizeForm" :model="sizeForm" label-width="auto">
     <el-form-item label="用户名" prop="userName">
       <el-input placeholder="请设置用户名" v-model="sizeForm.userName"></el-input>
     </el-form-item>
@@ -17,7 +17,7 @@
       </el-radio-group>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="onSubmit">立即注册</el-button>
+      <el-button type="primary" @click="onSubmit('sizeForm')">立即注册</el-button>
       <el-button>取消</el-button>
     </el-form-item>
   </el-form>
@@ -53,17 +53,23 @@ export default {
     };
   },
   methods: {
-    onSubmit() {
-      return request.post("http://localhost:8080/user/register", this.sizeForm).then(result => {
-        if (result.code === 0) {
-          //存在重复用户名，重新注册
-          this.$message.error("存在重复用户名，请重新注册")
+    onSubmit(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          request.post("http://localhost:8080/user/register", this.sizeForm).then(result => {
+            if (result.code === 0) {
+              //存在重复用户名，重新注册
+              this.$message.error("存在重复用户名，请重新注册")
+            } else {
+              //注册成功
+              this.$message.success("注册成功,请登录账号")
+              this.$router.push('/rl/login')
+            }
+          })
         } else {
-          //注册成功
-          this.$message.success("注册成功,请登录账号")
-          this.$router.push('/rl/login')
+          this.$message.error("表单验证错误，请重试")
         }
-      })
+      });
     }
   }
 };

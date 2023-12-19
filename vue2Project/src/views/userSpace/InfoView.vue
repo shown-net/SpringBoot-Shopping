@@ -1,5 +1,5 @@
 <template>
-  <el-form class="space-container" :rules="rules" ref="ruleForm" :model="sizeForm" label-width="80px">
+  <el-form class="space-container" :rules="rules" ref="sizeForm" :model="sizeForm" label-width="80px">
     <el-form-item class="space-item" label="用户名" prop="userName">
       <!--禁止修改用户名-->
       <el-input placeholder="用户名" v-model="sizeForm.userName" :disabled="true"></el-input>
@@ -21,8 +21,7 @@
       <el-input placeholder="电话号码" v-model="sizeForm.phoneNumber"></el-input>
     </el-form-item>
     <el-form-item size="large">
-      <el-button type="primary" @click="onSubmit">确定更新</el-button>
-      <el-button>保存修改</el-button>
+      <el-button type="primary" @click="onSubmit('sizeForm')">确定更新</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -91,12 +90,17 @@ export default {
         })
   },
   methods: {
-    onSubmit() {
-      request.post("http://localhost:8080/user/updateInfo", this.sizeForm)
-          .then(result => {
+    onSubmit(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          request.post("http://localhost:8080/user/updateInfo", this.sizeForm).then(result => {
             let msg = result.msg
             this.$message.info(msg);
           })
+        } else {
+          this.$message.error("表单验证不通过，请重试");
+        }
+      });
     }
   }
 }
