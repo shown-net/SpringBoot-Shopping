@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.OrderMapper">
+
+    <delete id="deleteOrder">
+        delete from orders where id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="orderInfoSelect" resultType="com.example.pojo.Order">
+        select id, price, user_id userID, product_ID productID ,quantity,
+        buy_time buyTime from orders
+        <if test="accountType=='消费者'">
+            where user_id=#{id}
+        </if>
+    </select>
+    <select id="orderStatisticsSelect" resultType="com.example.pojo.Order">
+        select product_ID productID, sum(quantity) as quantity, sum(price * quantity) as price
+        from orders
+        group by product_ID
+    </select>
+</mapper>
